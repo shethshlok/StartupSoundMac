@@ -2,22 +2,28 @@ import Cocoa
 import AVFoundation
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    
+
     var statusItem: NSStatusItem!
     var soundPlayer: AVAudioPlayer?
     var soundEnabled: Bool = true
-    var soundFilePath: URL?
-    
+    var soundFilePath: URL? {
+        didSet {
+            if let path = soundFilePath?.path {
+                UserDefaults.standard.set(path, forKey: "savedSoundFilePath")
+            }
+        }
+    }
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("Application did finish launching")
-        
+
         // Create the status item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
             button.title = "🔊"
             button.action = #selector(showMenu)
         }
-        
+
         // Create the menu
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Select Sound File", action: #selector(selectSoundFile), keyEquivalent: "s"))
@@ -26,20 +32,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate), keyEquivalent: "q"))
         statusItem.menu = menu
-        
+
         // Add notification observers for system events
         addNotificationObservers()
-        
+
         print("Notification observers added")
-        
-        // Prompt user to select a sound file if none is set
-        if soundFilePath == nil {
+
+        // Load saved sound file path from UserDefaults if available
+        if let savedPath = UserDefaults.standard.string(forKey: "savedSoundFilePath") {
+            soundFilePath = URL(fileURLWithPath: savedPath)
+            loadSound()
+        } else {
+            // Prompt user to select a sound file if none is set
             DispatchQueue.main.async {
                 self.selectSoundFile()
             }
         }
     }
-    
+
     func addNotificationObservers() {
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
@@ -47,15 +57,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: NSWorkspace.sessionDidBecomeActiveNotification,
             object: nil
         )
-        
+
         DistributedNotificationCenter.default().addObserver(
             self,
             selector: #selector(handleScreenUnlock),
             name: NSNotification.Name("com.apple.screenIsUnlocked"),
             object: nil
         )
-        
-        // Add observer for application becoming active
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleAppBecomeActive),
@@ -63,13 +72,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
     }
-    
+
     @objc func showMenu() {
         if let button = statusItem.button {
             statusItem.menu?.popUp(positioning: nil, at: NSPoint(x: 0, y: button.frame.height), in: button)
         }
     }
-    
+
     @objc func selectSoundFile() {
         let openPanel = NSOpenPanel()
         openPanel.title = "Select a Sound File"
@@ -83,7 +92,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-    
+
     func loadSound() {
         guard let soundFilePath = soundFilePath else {
             print("No sound file path set")
@@ -100,13 +109,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-    
+
     @objc func toggleSound() {
         soundEnabled.toggle()
         let state = soundEnabled ? "enabled" : "disabled"
         print("Sound is now \(state)")
     }
-    
+
     @objc func playSoundOnUnlock(_ notification: Notification) {
         print("Session did become active notification received")
         if soundEnabled {
@@ -117,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Sound is disabled")
         }
     }
-    
+
     @objc func handleScreenUnlock(_ notification: Notification) {
         print("Screen unlock notification received: \(notification.name)")
         if soundEnabled {
@@ -128,17 +137,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Sound is disabled")
         }
     }
-    
+
     @objc func handleAppBecomeActive(_ notification: Notification) {
         print("Application became active")
-        // You can add additional logic here if needed
+        // Additional logic can be added here if needed
     }
-    
+
     @objc func testSound() {
         print("Test sound requested")
         playSound()
     }
-    
+
     func playSound() {
         if let player = soundPlayer {
             if player.isPlaying {
@@ -151,7 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("Sound player is not initialized")
         }
     }
-    
+
     func showAlert(title: String, message: String) {
         let alert = NSAlert()
         alert.messageText = title
