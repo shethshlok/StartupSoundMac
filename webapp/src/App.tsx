@@ -23,7 +23,7 @@ function App() {
               Add personality to your Mac with custom unlock sounds. Choose from our curated collection or use your own. Simple, lightweight, and seamlessly integrated.
             </p>
             <div className="flex items-center gap-4">
-              <a href="/assets/StartupSound.dmg" download className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-medium flex items-center gap-2 hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/20 group">
+              <a href="/StartupSound.dmg" download className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-medium flex items-center gap-2 hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg shadow-blue-500/20 group">
                 <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Download for macOS
               </a>
@@ -36,7 +36,7 @@ function App() {
           </div>
             <div className="flex-1">
             <video 
-              src="/assets/video.mov" 
+              src="/video.mov" 
               controls 
               className="rounded-2xl shadow-2xl shadow-blue-500/20 transform hover:scale-[1.02] transition-transform duration-300"
             />

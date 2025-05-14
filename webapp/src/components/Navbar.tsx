@@ -1,4 +1,3 @@
-import React from 'react';
 import { Bell, Github, Download } from 'lucide-react';
 
 export function Navbar() {
