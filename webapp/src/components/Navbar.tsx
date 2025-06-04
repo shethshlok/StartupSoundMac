@@ -15,7 +15,7 @@ export function Navbar() {
           <Github className="w-4 h-4" />
           GitHub
         </a>
-        <a href="/assets/StartupSound.dmg">
+        <a href="/StartupSound.dmg">
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-700 transition-colors">
           <Download className="w-4 h-4" />
           Download
